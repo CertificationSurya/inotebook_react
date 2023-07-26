@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 
 // creating a UserSchema
-const UserSchema = new Schema({
+const UserSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -23,5 +23,8 @@ const UserSchema = new Schema({
     }
 })
 
-// mongoose.model will make a new model, ("model_name", "Schema")
-module.exports = mongoose.model('user',UserSchema);
+// mongoose.model will make a new model, ("model_name {collections}", "Schema")
+const User = mongoose.model('user',UserSchema);
+// makes indexes of queries which will boost queries and performance of app
+User.createIndexes()
+module.exports = User;
