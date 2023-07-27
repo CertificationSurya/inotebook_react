@@ -8,7 +8,7 @@ const express = require("express")
 connectToMongo()
 
 const app = express()
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 8080
 
 // middleware to handle json request sent by sender-end to server-end
 app.use(express.json())

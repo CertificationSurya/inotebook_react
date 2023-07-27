@@ -25,6 +25,6 @@ const UserSchema = new mongoose.Schema({
 
 // mongoose.model will make a new model, ("model_name {collections}", "Schema")
 const User = mongoose.model('user',UserSchema);
-// makes indexes of queries which will boost queries and performance of app
-User.createIndexes()
+// makes indexes of queries {in this case email as it is unique} which will boost queries and performance of app
+// User.createIndexes()
 module.exports = User;

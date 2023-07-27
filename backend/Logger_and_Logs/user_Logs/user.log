@@ -1,0 +1,2 @@
+{"level":"verbose","message":"username: Dummy Name with dummy404@gmail.com was saved on Database","timestamp":"2023-07-27T10:26:54.880Z"}
+{"level":"error","message":"dummy404@gmail.com already exists on our Database","timestamp":"2023-07-27T10:26:55.910Z"}
