@@ -15,6 +15,11 @@ const authLogger = createLogger({
         level: "error", // Set the log level for this transport to 'error'
         format: format.combine(format.timestamp(), format.json()),
       }),
+      new transports.File({
+        filename: "./Logger_and_Logs/user_Logs/user-warn.log",
+        level: "warn", 
+        format: format.combine(format.timestamp(), format.json()),
+      }),
     ],
   });
   
