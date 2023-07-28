@@ -47,6 +47,14 @@ const noteLogger = createLogger({
             // save log data in format of 
         format: format.combine(format.timestamp(), format.json()),
       }),
+        new transports.File({
+            // save log file to
+            filename: "./Logger_and_Logs/note_Logs/note-warn.log",
+            //level of message (error,warn, info, http, verbose, debug, silly)
+            level: "warn",
+            // save log data in format of 
+        format: format.combine(format.timestamp(), format.json()),
+      }),
     ],
   });
   
