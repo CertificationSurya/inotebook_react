@@ -4,4 +4,7 @@ node_modules
 
 .env
 
-user_Logs
+# user_Logs
+# token_Logs
+
+*.log

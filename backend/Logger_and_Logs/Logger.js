@@ -22,5 +22,32 @@ const authLogger = createLogger({
       }),
     ],
   });
+
+const tokenLogger = createLogger({
+    transports: [
+        new transports.File({
+            // save log file to
+            filename: "./Logger_and_Logs/token_Logs/token-error.log",
+            //level of message (error,warn, info, http, verbose, debug, silly)
+            level: "error",
+            // save log data in format of 
+        format: format.combine(format.timestamp(), format.json()),
+      }),
+    ],
+  });
   
-  module.exports = { authLogger };
+
+const noteLogger = createLogger({
+    transports: [
+        new transports.File({
+            // save log file to
+            filename: "./Logger_and_Logs/note_Logs/note-error.log",
+            //level of message (error,warn, info, http, verbose, debug, silly)
+            level: "error",
+            // save log data in format of 
+        format: format.combine(format.timestamp(), format.json()),
+      }),
+    ],
+  });
+  
+  module.exports = { authLogger, tokenLogger, noteLogger };

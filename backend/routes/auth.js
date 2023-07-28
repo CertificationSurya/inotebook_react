@@ -7,10 +7,12 @@ require("dotenv").config()
 const { body, validationResult } = require("express-validator")
 // Logger File Import
 const Logger = require("../Logger_and_Logs/Logger")
+
 // hashing package
 const bcrypt = require("bcryptjs")
 
 const jwt = require('jsonwebtoken')
+const fetchuser = require("../middleware/fetchuser")
 
 
 // will receive signature token from .env to sign with jsonwebtoken
@@ -20,6 +22,7 @@ const JWT_SECRET = process.env.JWT_SECRET
 // starting after from index.js's app.use("/api/auth", require("./routes/auth"))
 // usually "/" denotes root route but here it basically state root route('/') is /api/auth
 
+// Route - 1. Create User
 router.post("/createuser",
     // express check at Posting process
     [
@@ -77,32 +80,34 @@ router.post("/createuser",
     })
 
 
-    // Authenticate a user using : POST "/api/auth/login"
-    router.post("/login",
+// Route - 2
+// Authenticate a user using : POST "/api/auth/login"
+router.post("/login",
     [
         body("email", "Enter a valid email").isEmail(),
-        body("password","Password can't be blank").exists(),
+        // exists() checks if it's null/undefined/empty or no
+        body("password", "Password can't be blank").exists(),
     ],
-     async(req,res)=>{
+    async (req, res) => {
         const errors = validationResult(req);
-        if(!errors.isEmpty()){
+        if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const {email, password} = req.body;
+        const { email, password } = req.body;
 
-        try{
-            let user = await User.findOne({email});
-            if(!user){
+        try {
+            let user = await User.findOne({ email });
+            if (!user) {
                 Logger.authLogger.warn(`Ghost email address -> ${email}`)
-                return res.status(400).json({error: "Please try to login with correct credentials"})
+                return res.status(400).json({ error: "Please try to login with correct credentials" })
             }
             // compares user password (auto convert to hash by bcrypt.compare) with hashed form of password in Database
             const passwordCompare = await bcrypt.compare(password, user.password)
             // password not match?
-            if(!passwordCompare){
+            if (!passwordCompare) {
                 Logger.authLogger.warn(`Wrong Password by email -> ${email}`)
-                return res.status(400).json({error: "Please try to login with correct credentials"})
+                return res.status(400).json({ error: "Please try to login with correct credentials" })
             }
 
             // password yes match
@@ -112,14 +117,35 @@ router.post("/createuser",
                 }
             }
             const authtoken = jwt.sign(data, JWT_SECRET)
-            res.json({authtoken})
-            
+            res.json({ authtoken })
+
         }
-        catch (error){
+        catch (error) {
             Logger.authLogger.error(`server error and couldn't process request -> ${req.body}`)
-            return res.status(500).json({error: "Internal Server error occured!"})
+            return res.status(500).json({ error: "Internal Server error occured!" })
 
         }
     })
 
+
+// Route - 3 : Get Loggedin User Details using: POST "/api/auth/getuser". Login Required
+// "fetchuser" is the middleware which gets executed in interval of server request sent and server response sent
+router.post("/getuser", fetchuser, async (req, res) => {
+    
+  // "fetchuser" [a middleware] gets executed beforehand of getting here.
+    try {
+        // get user id from token (extraction performed by middleware [fetchuser])
+        const userId = req.user.id;
+        // find user id and select all but password. findById(), select() are both queries of MongoDb
+        const user = await User.findById({ _id: userId }).select("-password")
+        res.send(user)
+
+    } catch (error) {
+        console.error(error.message);
+        Logger.tokenLogger.error(`server error While Authentication of User`)
+        res.status(500).send("Internal Server Error Occured!")
+    }
+})
+
 module.exports = router;
+
