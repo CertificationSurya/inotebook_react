@@ -4,9 +4,10 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import About from './components/About';
 
-import { Route, RouterProvider, Routes, createBrowserRouter } from "react-router-dom";
-
 import NoteState from './context/notes/NoteState';
+import Alert from './components/Alert';
+
+import { Route, RouterProvider, Routes, createBrowserRouter } from "react-router-dom";
 
 // Create router
 const router = createBrowserRouter([
@@ -24,12 +25,17 @@ function Root() {
     <>
       {/* NoteState is place as wrapper so that all variable in note */}
       <NoteState>
-
-          <Navbar />
+        <Navbar />
+        <Alert message={"I am vengence"}/>
+        <div className="container">
+          
           <Routes>
             <Route exact path='/' element={<Home />} />
             <Route exact path='/about' element={<About />} />
           </Routes>
+
+        </div>
+
       </NoteState>
     </>
   )
