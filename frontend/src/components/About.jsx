@@ -1,5 +1,5 @@
 // import context hook from react
-import React, { useContext, useEffect } from "react"
+import React from "react"
 // import context
 // import noteContext from "../context/notes/noteContext"
 

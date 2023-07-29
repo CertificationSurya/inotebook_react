@@ -1,17 +1,26 @@
-import React from 'react'
+import React, { useContext } from 'react'
+// importing context
+import noteContext from '../context/notes/noteContext'
 
 const Noteitem = (props) => {
+    const context = useContext(noteContext)
+    
+    const { deleteNote } = context;
+
     // destructured to get note | i could also use props.note if not destructured
-    const { note } = props;
+    const { note, updateNote } = props;
     return (
         <div className='col-md-3'>
             <div className="card my-3">
                 <div className="card-body">
                     <div className="d-flex justify-content-center ali">
                         <h5 className="card-title">{note.title}</h5>
-                        <i className="far fa-trash-alt mx-2"></i>
-                        <i className="far fa-edit mx-2"></i>
-                    </div>
+                        {/* when onClicked on delete icon, send the id of the note to be deleted in the "deletenote" function */}
+                        <i className="far fa-trash-alt mx-2" onClick={()=> deleteNote(note._id)}></i>
+
+                        {/* When a user click on edit icon, it triggers updateNote function which will open a modal with respective value */}
+                        <i className="far fa-edit mx-2" onClick={()=> updateNote(note)}></i>
+                     </div>
 
                     <p className="card-text">{note.description}</p>
                 </div>

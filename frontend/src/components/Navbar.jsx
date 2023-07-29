@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React  from 'react'
 // importing useLocation hook.
 // This hook returns the current location object. This can be useful if you'd like to perform some side effect whenever the current location changes.
 

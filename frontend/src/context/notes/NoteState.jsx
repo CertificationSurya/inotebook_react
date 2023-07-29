@@ -4,54 +4,107 @@ import NoteContext from "./noteContext"
 import { useState } from "react"
 
 // creating a function which will provide state to all heirarchy
-const NoteState = (props)=>{ 
-    const notesInitial = [
-        {
-          "_id": "64c3a58a2d7343ed13e88c572",
-          "user": "64c2b2f6d68ff1d802343e42",
-          "title": "I am a title",
-          "description": "Please wake up early",
-          "tag": "Personal",
-          "date": "2023-07-28T11:24:58.255Z",
-          "__v": 0
-        },
-        {
-          "_id": "64c3a5ba3e0125ff43c81d96f",
-          "user": "64c2b2f6d68ff1d802343e42",
-          "title": "A title",
-          "description": "Please wake up early",
-          "tag": "Personal",
-          "date": "2023-07-28T11:25:46.098Z",
-          "__v": 0
-        },
-        {
-          "_id": "64c3a5ba35e025ff43c81d96f",
-          "user": "64c2b2f6d68ff1d802343e42",
-          "title": "A daf",
-          "description": "Please wake up early",
-          "tag": "Personal",
-          "date": "2023-07-28T11:25:46.098Z",
-          "__v": 0
-        },
-        {
-          "_id": "64c3a5ba34e025ff43c81d96f",
-          "user": "64c2b2f6d68ff1d802343e42",
-          "title": "A titfale",
-          "description": "Please wake up early",
-          "tag": "Personal",
-          "date": "2023-07-28T11:25:46.098Z",
-          "__v": 0
-        }
-      ]
+const NoteState = (props) => {
+    // url for hitting API
+    const host = "http://localhost:8080"
 
-     
-      const [notes, setNotes] = useState(notesInitial)
+    const notesInitial = []
 
-    return(
-        // we'll be wraping elements in app.jsx for which we'll need data/value
+    const [notes, setNotes] = useState(notesInitial)
+
+
+    // Get all Notes.
+    const getNotes = async () => {
+        const response = await fetch(`${host}/api/notes/fetchallnotes`, {
+            method: "GET",
+            headers: {
+                "Content-type": "application/json",
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRjMmIyZjZkNjhmZjFkODAyMzQzZTQyIn0sImlhdCI6MTY5MDY0NDQ2M30.icd90tNivAkH6pxSvo_5CHw_u8IsBHnEm2t9L1pIft0"
+            },
+        })
+
+        let json = await response.json()
+        setNotes(json)
+
+    }
+
+
+    // Add a Note.
+    // takes new note which includes (title, description, tag) from API call and using setter function, push it to "notes" state 
+    const addNote = async ({ title, description, tag }) => {
+
+        const response = await fetch(`${host}/api/notes/addnote`, {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json",
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRjMmIyZjZkNjhmZjFkODAyMzQzZTQyIn0sImlhdCI6MTY5MDY0NDQ2M30.icd90tNivAkH6pxSvo_5CHw_u8IsBHnEm2t9L1pIft0"
+            },
+            // body will be object with title: titleVal, description: descriptionVal, tag: tagVal
+            body: JSON.stringify({ title, description, tag })
+        })
+
+        await getNotes()
+    }
+
+    // Delete a Note
+    const deleteNote = async (id) => {
+        // API call
+        const response = await fetch(`${host}/api/notes/deletenote/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-type": "application/json",
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRjMmIyZjZkNjhmZjFkODAyMzQzZTQyIn0sImlhdCI6MTY5MDY0NDQ2M30.icd90tNivAkH6pxSvo_5CHw_u8IsBHnEm2t9L1pIft0"
+            }
+        })
+
+        // const json = response.json();
+
+        // setNotes(previous note without note with arguement id )
+        const newNotes = notes.filter(note => note._id !== id)
+        setNotes(newNotes)
+    }
+
+
+    // Edit a Note
+    // get "_id" and rename it to "id"
+    const editNote = async ({ _id: id, title, description, tag }) => {
         
+
+        // API call
+        const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-type": "application/json",
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRjMmIyZjZkNjhmZjFkODAyMzQzZTQyIn0sImlhdCI6MTY5MDY0NDQ2M30.icd90tNivAkH6pxSvo_5CHw_u8IsBHnEm2t9L1pIft0"
+            },
+            body: JSON.stringify({ title, description, tag })
+        })
+
+        const json = await response.json();
+        // for client side changing in data without server fetch
+        let newNotes = JSON.parse(JSON.stringify(notes))
+
+
+        // Logic to edit in client side
+        // By harry. first takes all data in newNotes, then iterate over data to find modified data and then change it as well as exit the loop. Meaning save unnecessary time consumption. Beneficial if the element is closer to start.
+        for (let index = 0; index < newNotes.length; index++) {
+            const element = newNotes[index];
+            if(element._id === id){
+                newNotes[index].title = title;
+                newNotes[index].description = description;
+                newNotes[index].tag = tag;
+                break;
+            }
+        }
+
+        setNotes(newNotes)
+    }
+
+    return (
+        // we'll be wraping elements (NoteState) in app.jsx for which we'll need data/value
+
         // any data/value that you want to sent as context goes under "value" (below line)
-        <NoteContext.Provider value={{notes, setNotes}}>
+        <NoteContext.Provider value={{ notes, addNote, deleteNote, editNote, getNotes }}>
             {props.children}
         </NoteContext.Provider>
     )
