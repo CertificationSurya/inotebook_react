@@ -2,11 +2,20 @@ import React from 'react'
 // importing useLocation hook.
 // This hook returns the current location object. This can be useful if you'd like to perform some side effect whenever the current location changes.
 
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 
 const Navbar = () => {
   // here location contains details about current location
   let location = useLocation()
+
+  // navigation
+  const navigation = useNavigate()
+
+  const handleLogout = () =>{
+    localStorage.removeItem('token')
+    navigation("/login")
+    
+  }
 
 
   return (
@@ -27,10 +36,16 @@ const Navbar = () => {
               </li>
             </ul>
 
-            <form className="d-flex" role="search">
-              <Link className="btn btn-primary mx-2" to="/login" role='button'>Login</Link>
-              <Link className="btn btn-primary mx-2" to="/signup" role='button'>Signup</Link>
-            </form>
+            {
+              !localStorage.getItem('token') ?
+                <form className="d-flex" role="search">
+                   <Link className="btn btn-primary mx-2" to="/login" role='button'>Login</Link>
+                  <Link className="btn btn-primary mx-2" to="/signup" role='button'>Signup</Link>
+                </form>
+
+                :
+                <button className="btn btn-primary mx-1" onClick={handleLogout}> Logout </button>
+                  }
           </div>
         </div>
       </nav>

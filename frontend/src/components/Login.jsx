@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from "react-router-dom"
 
-const Login = () => {
+const Login = (props) => {
     const [credentials, setCredentials] = useState({email: '', password: ''})
 
     // in Version 5 useHistory hook to redirect user. in version 6 useNavigate
@@ -33,15 +33,19 @@ const Login = () => {
             // if user was logged in, save auth-token and redirect
             localStorage.setItem('token', json.authtoken)
             // push user to /("home")
+            props.showAlert("Logged in Successfully", "success")
             navigate('/')
         }
         else{
-            alert("invald")
+            props.showAlert("Invalid Credentials filled", "danger")
         }
     }
 
 
     return (
+        <div className='mt-3'>
+
+        <h2>Login to continue to iNotebook</h2>
         <form onSubmit={handleSubmit}>
             <div className="mb-3">
                 <label htmlFor="email" className="form-label">Email address</label>
@@ -55,6 +59,7 @@ const Login = () => {
 
             <button type="submit" className="btn btn-primary">Submit</button>
         </form>
+        </div>
     )
 }
 

@@ -19,7 +19,7 @@ const NoteState = (props) => {
             method: "GET",
             headers: {
                 "Content-type": "application/json",
-                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRjMmIyZjZkNjhmZjFkODAyMzQzZTQyIn0sImlhdCI6MTY5MDY0NDQ2M30.icd90tNivAkH6pxSvo_5CHw_u8IsBHnEm2t9L1pIft0"
+                "auth-token": localStorage.getItem('token')
             },
         })
 
@@ -37,7 +37,7 @@ const NoteState = (props) => {
             method: "POST",
             headers: {
                 "Content-type": "application/json",
-                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRjMmIyZjZkNjhmZjFkODAyMzQzZTQyIn0sImlhdCI6MTY5MDY0NDQ2M30.icd90tNivAkH6pxSvo_5CHw_u8IsBHnEm2t9L1pIft0"
+                "auth-token": localStorage.getItem('token')
             },
             // body will be object with title: titleVal, description: descriptionVal, tag: tagVal
             body: JSON.stringify({ title, description, tag })
@@ -46,9 +46,10 @@ const NoteState = (props) => {
         const savedNote = await response.json()
 
         setNotes([savedNote, ...notes])
+        props.showAlert("Added Note Successfully", "success")
         
     }
-
+    
     // Delete a Note
     const deleteNote = async (id) => {
         // API call
@@ -56,7 +57,7 @@ const NoteState = (props) => {
             method: "DELETE",
             headers: {
                 "Content-type": "application/json",
-                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRjMmIyZjZkNjhmZjFkODAyMzQzZTQyIn0sImlhdCI6MTY5MDY0NDQ2M30.icd90tNivAkH6pxSvo_5CHw_u8IsBHnEm2t9L1pIft0"
+                "auth-token": localStorage.getItem('token')
             }
         })
 
@@ -64,6 +65,7 @@ const NoteState = (props) => {
 
         // setNotes(previous note without note with arguement id )
         const newNotes = notes.filter(note => note._id !== id)
+        props.showAlert("Deleted Note Successfully", "success")
         setNotes(newNotes)
     }
 
@@ -71,14 +73,13 @@ const NoteState = (props) => {
     // Edit a Note
     // get "_id" and rename it to "id"
     const editNote = async ({ _id: id, title, description, tag }) => {
-        
 
         // API call
         const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
             method: "PUT",
             headers: {
                 "Content-type": "application/json",
-                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRjMmIyZjZkNjhmZjFkODAyMzQzZTQyIn0sImlhdCI6MTY5MDY0NDQ2M30.icd90tNivAkH6pxSvo_5CHw_u8IsBHnEm2t9L1pIft0"
+                "auth-token": localStorage.getItem('token')
             },
             body: JSON.stringify({ title, description, tag })
         })
@@ -87,7 +88,7 @@ const NoteState = (props) => {
         // for client side changing in data without server fetch
         let newNotes = JSON.parse(JSON.stringify(notes))
 
-
+        
         // Logic to edit in client side
         // By harry. first takes all data in newNotes, then iterate over data to find modified data and then change it as well as exit the loop. Meaning save unnecessary time consumption. Beneficial if the element is closer to start.
         for (let index = 0; index < newNotes.length; index++) {
@@ -101,6 +102,7 @@ const NoteState = (props) => {
         }
 
         setNotes(newNotes)
+        props.showAlert("Updated Note Successfully", "success")
     }
 
     return (

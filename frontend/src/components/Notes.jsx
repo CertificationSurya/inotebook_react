@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 // useRef hook basically gives reference to an element
 
 // importing created context
@@ -7,14 +8,21 @@ import Noteitem from './NoteItem'
 import AddNote from './AddNote'
 
 
-const Notes = () => {
+const Notes = (props) => {
     // take notes and other values & methods received from useContext(contentValue)
     const context = useContext(noteContext)
     const { notes, getNotes, editNote } = context
+    let navigate = useNavigate()
 
     // when first time loaded, run getNotes function
     useEffect(() => {
+        // if user have token stored in localStorage, then only fetch notes
+        if (localStorage.getItem("token")){
             getNotes()
+        }
+        else{
+            navigate("/login")
+        }
     }, [])
 
     // creating a reference with initial value as null, but later it refers to a button on modal which will trigger modal to on/off
@@ -28,6 +36,7 @@ const Notes = () => {
     const updateNote = (currentNote) => {
         ref.current.click()
         setNote(currentNote)
+        props.showAlert("Updated Successfully", "success")
     }
     
     // when new note is submitted
@@ -44,7 +53,7 @@ const Notes = () => {
 
     return (
         <>
-            <AddNote />
+            <AddNote showAlert ={props.showAlert} />
 
             {/* Modal when updating */}
             {/* <!-- Button trigger modal --> */}

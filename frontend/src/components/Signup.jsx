@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from "react-router-dom"
 
 
-const Signup = () => {
+const Signup = (props) => {
     const [errorMsg, setErrorMsg] = useState("")
 
     const [credentials, setCredentials] = useState({ name: '', email: '', password: "", cpassword: "" })
@@ -20,13 +20,13 @@ const Signup = () => {
         const { name, email, password, cpassword } = credentials
 
         // ..informative alert [To Be Deleted]
-        if (cpassword !== password) {
-            setErrorMsg("Your password Doesn't match with confirmation")
-            setTimeout(() => {
-                setErrorMsg("")
-            }, 2000)
-            return
-        }
+        // if (cpassword !== password) {
+        //     setErrorMsg("Your password Doesn't match with confirmation")
+        //     setTimeout(() => {
+        //         setErrorMsg("")
+        //     }, 2000)
+        //     return
+        // }
 
         // send POST request which'll give back auth-token (JWT)
         const response = await fetch("http://localhost:8080/api/auth/createuser", {
@@ -45,15 +45,17 @@ const Signup = () => {
             localStorage.setItem('token', json.authToken)
             // push user to /("home")
             navigate('/')
+            props.showAlert("Account Created Successfully", "success")
         }
         else {
-            alert("invald")
+            props.showAlert("Invalid Details", "danger")
         }
     }
 
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className='mt-3'>
+            <h2>Signup to store your notes.</h2>
             <div className="mb-3">
                 <label htmlFor="name" className="form-label">Name</label>
                 <input type="name" className="form-control" name='name' id="name" value={credentials.name} onChange={onChange} required />
