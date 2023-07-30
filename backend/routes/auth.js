@@ -31,6 +31,9 @@ router.post("/createuser",
         body('email', 'Enter a valid email').isEmail(),
         body('password', 'Password must be atleast 5 characters').isLength({ min: 5 }),
     ], async (req, res) => {
+
+        let success = false;
+
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() })
@@ -43,7 +46,7 @@ router.post("/createuser",
             if (user) {
                 // log the message (type-> error) to log file if email already exists.
                 Logger.authLogger.error(`${req.body.email} already exists on our Database`)
-                return res.status(400).json({ error: "Sorry a user with this email is already on our Database" })
+                return res.status(400).json({success, error: "Sorry a user with this email is already on our Database" })
             }
 
             // salt, hashing on password and storing on secPass variable which is send as password in Database 
@@ -64,8 +67,10 @@ router.post("/createuser",
             }
             // signing data (user id in this case) with my secret key
             const authToken = jwt.sign(data, JWT_SECRET);
+            
+            success = true;
 
-            res.json({ authToken }) // es6 fo res.json(authToken: authToken)
+            res.json({success, authToken }) // es6 fo res.json(authToken: authToken)
 
             //   log message to log file with data
             Logger.authLogger.verbose(`username: ${req.body.name} with ${req.body.email} was saved on Database`)
@@ -98,16 +103,17 @@ router.post("/login",
 
         try {
             let user = await User.findOne({ email });
+            let success = false
             if (!user) {
                 Logger.authLogger.warn(`Ghost email address -> ${email}`)
-                return res.status(400).json({ error: "Please try to login with correct credentials" })
+                return res.status(400).json({success,  error: "Please try to login with correct credentials" })
             }
             // compares user password (auto convert to hash by bcrypt.compare) with hashed form of password in Database
             const passwordCompare = await bcrypt.compare(password, user.password)
             // password not match?
             if (!passwordCompare) {
                 Logger.authLogger.warn(`Wrong Password by email -> ${email}`)
-                return res.status(400).json({ error: "Please try to login with correct credentials" })
+                return res.status(400).json({success,  error: "Please try to login with correct credentials" })
             }
 
             // password yes match
@@ -117,7 +123,9 @@ router.post("/login",
                 }
             }
             const authtoken = jwt.sign(data, JWT_SECRET)
-            res.json({ authtoken })
+            
+            success = true;
+            res.json({ success,  authtoken })
 
         }
         catch (error) {

@@ -8,6 +8,9 @@ import NoteState from './context/notes/NoteState';
 import Alert from './components/Alert';
 
 import { Route, RouterProvider, Routes, createBrowserRouter } from "react-router-dom";
+import Signup from './components/Signup';
+import Login from './components/login';
+
 
 // Create router
 const router = createBrowserRouter([
@@ -32,6 +35,8 @@ function Root() {
           <Routes>
             <Route exact path='/' element={<Home />} />
             <Route exact path='/about' element={<About />} />
+            <Route exact path='/login' element={<Login />} />
+            <Route exact path='/signup' element={<Signup />} />
           </Routes>
 
         </div>

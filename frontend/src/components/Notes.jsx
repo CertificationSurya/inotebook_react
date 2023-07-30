@@ -21,7 +21,7 @@ const Notes = () => {
     const ref = useRef(null)
     const refClose = useRef(null)
 
-    
+    // note variable to work with adding or updating note
     const [note, setNote] = useState({title: '', description:'', tag: ''}) 
 
     // For updating function
@@ -63,13 +63,13 @@ const Notes = () => {
                             <form className='my-3'>
                                 <div className="mb-3">
                                     <label htmlFor="etitle" className="form-label">Title</label>
-                                    <input type="text" className="form-control" id="etitle" name='title' aria-describedby="emailHelp" value={note.title} onChange={onChange} />
+                                    <input required={true} type="text" className="form-control" id="etitle" name='title' aria-describedby="emailHelp" value={note.title} onChange={onChange} minLength={5}/>
 
                                 </div>
 
                                 <div className="mb-3">
                                     <label htmlFor="edescription" className="form-label">Description</label>
-                                    <input type="text" className="form-control" id="edescription" name="description" value={note.description} onChange={onChange} />
+                                    <input required={true} type="text" className="form-control" id="edescription" name="description" value={note.description} onChange={onChange} minLength={5} />
                                 </div>
 
                                 <div className="mb-3">
@@ -81,15 +81,16 @@ const Notes = () => {
                         </div>
                         <div className="modal-footer">
                             <button ref={refClose} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button onClick={handleClick} type="button" className="btn btn-primary" >Update Note</button>
+                            <button disabled={note.title.length < 5 || note.description.length<5} onClick={handleClick} type="button" className="btn btn-primary" >Update Note</button>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* notes display */}
-            <div className="row my-3">
+            <div className="container row my-3">
                 <h2>Your Notes</h2>
+                {notes.length===0 && <div className="container">No notes to display, Create few Notes.</div>}
                 {notes.map((note) => {
                     return <Noteitem key={note._id} updateNote={updateNote} note={note} />
                 })}

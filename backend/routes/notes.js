@@ -40,7 +40,7 @@ router.post('/addnote', fetchuser, [
             //gets title, description and tag from req.body
             const { title, description, tag } = req.body
             const note = new Note({
-                title, description, tag, user: req.user.id
+                title, description, tag: (tag? tag : "Personal"), user: req.user.id
             })
             // save note to DB 
             const savedNote = await note.save()
@@ -67,7 +67,8 @@ router.put('/updatenote/:id', fetchuser,
 
         if (title) { newNote.title = title }
         if (description) { newNote.description = description }
-        if (tag) { newNote.tag = tag }
+        // if tag, then tag, else "Personal"
+         newNote.tag = tag? tag : "Personal"
 
         // Find the note that gonna be updated and update it.
         let note = await Note.findById(req.params.id)

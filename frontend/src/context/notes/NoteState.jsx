@@ -43,7 +43,10 @@ const NoteState = (props) => {
             body: JSON.stringify({ title, description, tag })
         })
 
-        await getNotes()
+        const savedNote = await response.json()
+
+        setNotes([savedNote, ...notes])
+        
     }
 
     // Delete a Note
